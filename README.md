@@ -9,6 +9,21 @@ This module allows for the efficient management of break and recreation room res
 * Sebastián Julián Villarraga Guerrero
 * Jeimy Alejandra Yaya Martinez
 
+
+## Module Description
+
+Manages the reservations of spaces and the loans of recreational objects. Administers availability, loans, returns, and cancellations using a modular RESTful approach.
+
+## Technologies Used
+- **Java 17**
+- **Spring Boot 3.x** 
+- **Maven**
+- **JUnit 5** 
+- **JaCoCo** 
+- **SonarCloud** 
+- **Azure**
+
+
 ## Project Structure
 ```
 ECI-Bienestar/
@@ -44,6 +59,64 @@ ECI-Bienestar/
         └── com/booking/
             └── EciBienestarApplicationTests.class
 ```
+## Diagramas
+- **Diagramas de datos**: 
+    ![](image/sql.jpg)
+
+- **Diagramas de clases**: 
+- **Diagramas de componentes**: 
+- **Diagrama de Secuencia**: 
+
+
+##  How to Run the Project
+
+### Prerequisites
+- Install **Java 17**
+- Install **Maven**
+
+### Steps to Run
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/ECIBienestar/circonio-booking-loans-services.git
+   ```
+
+2. Configure database connection in `application.properties`:
+   ```properties
+   spring.application.name=EciBienestar
+   spring.datasource.username=postgres
+   spring.datasource.url=jdbc:postgresql://db.tbdioafooovaedfssykt.supabase.co:5432/postgres?
+   ```
+
+3. Build and run the application:
+   ```bash
+   mvn clean install
+   mvn spring-boot:run
+   ```
+
 
 
 ## API Endpoints
+
+## Despliegue CI/CD 
+
+Azure Pipelines configured for automatic deployment.
+
+GitHub Actions integrated.
+
+Deployed on Azure App Service.
+
+![](image/azure.png)
+
+![](image/actions.png)
+
+Documented with Swagger.
+
+![](image/swagger.png)
+
+# Enlaces
+
+🔗 Swagger UI: https://ecibienestar-booking-hnbeerf3caafcacs.canadacentral-01.azurewebsites.net/swagger-ui/index.html
+
+
+
