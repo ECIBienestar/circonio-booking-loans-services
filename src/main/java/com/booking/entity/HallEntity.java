@@ -17,12 +17,12 @@ public class HallEntity {
     @Id
     @Column(name = "id", nullable = false, unique = true)
     private int id;
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = true, unique = true)
     private String name;
-    @Column(name = "location", nullable = false)
+    @Column(name = "location", nullable = true)
     private String location;
-    @Column(name = "status", nullable = false)
-    private char status;
+    @Column(name = "status", nullable = true)
+    private String status;
     @Column(name = "description", nullable = true)
     private String description;
     @Column(name = "capacity", nullable = false)

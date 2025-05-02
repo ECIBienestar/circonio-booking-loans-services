@@ -31,8 +31,17 @@ public class HallService {
      */
     public List<HallEntity> getAllHalls() {
         List<HallEntity> list = hallRepository.findAll();
-        System.out.println(list.size());
         return list;
     }
+
+    public HallEntity saveHall(HallEntity hall) {
+        hall.toString();
+        return hallRepository.save(hall);
+    }
+
+    public void deleteHall(int id) {
+        hallRepository.deleteById(id);
+    }
+
 
 }
