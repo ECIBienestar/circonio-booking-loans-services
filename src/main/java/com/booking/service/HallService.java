@@ -30,7 +30,9 @@ public class HallService {
      * @return a list of {@link HallEntity} objects representing all halls.
      */
     public List<HallEntity> getAllHalls() {
-        return hallRepository.findAll();
+        List<HallEntity> list = hallRepository.findAll();
+        System.out.println(list.size());
+        return list;
     }
 
 }
