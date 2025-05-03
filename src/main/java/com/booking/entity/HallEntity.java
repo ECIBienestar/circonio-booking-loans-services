@@ -23,6 +23,7 @@ import jakarta.persistence.*;
 public class HallEntity {
     @Id
     @Column(name = "id", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "name", nullable = true, unique = true)
     private String name;

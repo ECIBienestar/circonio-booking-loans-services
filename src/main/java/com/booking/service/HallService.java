@@ -75,4 +75,5 @@ public class HallService {
         hallRepository.deleteById(id);
         return "El salon con el id " + id + " ha sido eliminado";
     }
+    
 }
