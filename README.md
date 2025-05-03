@@ -64,8 +64,12 @@ ECI-Bienestar/
     ![](image/sql.jpg)
 
 - **Diagramas de clases**: 
+   ![](image/DiagramaClase.png)
+
 - **Diagramas de componentes**: 
-- **Diagrama de Secuencia**: 
+   
+
+
 
 
 ##  How to Run the Project
