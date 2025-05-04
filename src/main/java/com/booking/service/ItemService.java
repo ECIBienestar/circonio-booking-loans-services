@@ -172,9 +172,19 @@ public class ItemService {
      * @param category the category to search for items
      * @return a list of ItemEntity objects that belong to the specified category
      */
-    public List<ItemEntity> searchItemsByCategory(String category) {
-        return itemRepository.findByCategory(category);
+    public List<ItemEntity> searchItemsByCategory(String category, Boolean available) {
+        List<ItemEntity> itemsAll = itemRepository.findByCategory(category);
+        if (itemsAll.isEmpty()) {
+            return null;
+        }
+        if (available == null) {
+            return itemsAll.stream()
+                    .filter(item -> item.isAvailable())
+                    .toList();
+        } else {
+            return itemsAll.stream()
+                    .filter(item -> item.isAvailable() == available)
+                    .toList();
+        }
     }
 }
-
-

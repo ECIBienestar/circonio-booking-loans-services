@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.booking.service.ItemService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Parameter;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -107,12 +109,13 @@ public class ItemController {
     }
 
     @GetMapping("/category/{name}")
-    @Operation(summary = "Get items by category ID", description = "Retrieve all items associated with a specific category ID", tags = { "Item Management" })
-    public ResponseEntity<?> searchItemsByCategory(@PathVariable String name) {
-        List<ItemEntity> items = itemService.searchItemsByCategory(name);
-        if (items.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+    @Operation(summary = "Search items by category", description = "Search for items by their category name", tags = { "Item Management" },
+            parameters = {
+                    @Parameter(name = "available", description = "Filter by availability", required = false, in = ParameterIn.QUERY)
+            })
+    public ResponseEntity<?> searchItemsByCategory(@PathVariable String name,
+                                                   @RequestParam(value = "available", required = false) Boolean available) {
+        List<ItemEntity> items = itemService.searchItemsByCategory(name, available);
         return ResponseEntity.ok(items);
     }
 }
