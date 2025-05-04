@@ -1,7 +1,6 @@
 package com.booking.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +60,7 @@ public class BookingEntity {
 
     @OneToMany(mappedBy = "bookingId", targetEntity = LoanEntity.class)
     @JsonManagedReference
+    @Builder.Default
     private List<LoanEntity> itemsLoans = new ArrayList<>();
 
 }

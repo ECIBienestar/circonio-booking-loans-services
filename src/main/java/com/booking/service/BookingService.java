@@ -100,4 +100,57 @@ public class BookingService {
         return bookingSave;
     }
 
+    /**
+     * Retrieves a booking entity by its unique identifier.
+     *
+     * @param id the unique identifier of the booking to retrieve
+     * @return the BookingEntity associated with the given id
+     * @throws BookingException if no booking is found with the specified id
+     */
+    public BookingEntity getBookingById(int id) {
+        return bookingRepository.findById(id).orElseThrow(() -> new BookingException("No se encontro la reserva"));
+    }
+
+    /**
+     * Retrieves a list of loan entities associated with a specific booking ID.
+     *
+     * @param id the unique identifier of the booking
+     * @return a list of LoanEntity objects associated with the specified booking
+     * @throws IllegalArgumentException if the booking ID is invalid or not found
+     */
+    public List<LoanEntity> getLoansByBookingId(int id) {
+        BookingEntity booking = getBookingById(id);
+        return booking.getItemsLoans();
+    }
+
+    /**
+     * Retrieves the first booking associated with a specific user ID.
+     *
+     * @param id the ID of the user whose bookings are to be retrieved.
+     * @return the first {@link BookingEntity} associated with the given user ID.
+     * @throws BookingException if no bookings are found for the specified user ID.
+     */
+    public BookingEntity getBookingsByUserId(int id) {
+        List<BookingEntity> bookings = bookingRepository.findByIdUser(id);
+        if (bookings.isEmpty()) {
+            throw new BookingException("No se encontraron reservas para el usuario");
+        }
+        return bookings.get(0);
+    }
+
+    /**
+     * Retrieves a list of bookings associated with a specific hall ID.
+     *
+     * @param id the unique identifier of the hall
+     * @return a list of {@link BookingEntity} objects associated with the specified hall ID
+     * @throws BookingException if no bookings are found for the given hall ID
+     */
+    public List<BookingEntity> getBookingsByHallId(int id) {
+        List<BookingEntity> bookings = bookingRepository.findByHallId(id);
+        if (bookings.isEmpty()) {
+            throw new BookingException("No se encontraron reservas para la sala");
+        }
+        return bookings;
+    }
+
 }
