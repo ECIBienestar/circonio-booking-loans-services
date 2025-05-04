@@ -1,9 +1,11 @@
 package com.booking.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 
 @Entity
 @Table(name = "items")
+@Builder
 public class ItemEntity {
     @Id
     @Column(name = "id", nullable = false, unique = true)

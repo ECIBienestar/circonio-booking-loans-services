@@ -100,6 +100,10 @@ public class ItemService {
         return itemRepository.save(itemEntity);
     }
 
+    public ItemEntity saveItem(ItemEntity item) {
+        return itemRepository.save(item);
+    }
+
     /**
      * Deletes an item with the specified ID from the repository.
      *
