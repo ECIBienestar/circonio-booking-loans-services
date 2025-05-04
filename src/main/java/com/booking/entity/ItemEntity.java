@@ -114,4 +114,5 @@ public class ItemEntity {
     public void setHall(HallEntity hall) {
         this.hall = hall;
     }
+
 }

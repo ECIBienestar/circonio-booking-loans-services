@@ -10,5 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface ItemRepository extends JpaRepository <ItemEntity, Integer> {
 
     List<ItemEntity> findByHallId(int hallId);
+    List<ItemEntity> findByNameContainingIgnoreCase(String name);
+
     
 }
