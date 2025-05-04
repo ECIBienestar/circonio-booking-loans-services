@@ -11,6 +11,8 @@ public interface ItemRepository extends JpaRepository <ItemEntity, Integer> {
 
     List<ItemEntity> findByHallId(int hallId);
     List<ItemEntity> findByNameContainingIgnoreCase(String name);
+    ItemEntity findByName(String name);
+    List<ItemEntity> findByCategory(String category);
 
     
 }

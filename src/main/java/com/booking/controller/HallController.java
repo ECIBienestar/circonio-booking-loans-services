@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.Map;
 
 import com.booking.entity.HallEntity;
+import com.booking.entity.dto.HallEntityRequestDTO;
 import com.booking.exception.HallException;
 import com.booking.service.HallService;
 
@@ -123,7 +124,7 @@ public class HallController {
                     @ApiResponse(responseCode = "400", description = "Invalid hall data or business rule violation", content = @Content(mediaType = "application/json")),
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             })
-    public ResponseEntity<?> addHall(@RequestBody HallEntity hall) {
+    public ResponseEntity<?> addHall(@RequestBody HallEntityRequestDTO hall) {
         try {
             HallEntity savedHall = hallService.saveHall(hall);
             return ResponseEntity.status(201).body(

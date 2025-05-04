@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.booking.entity.HallEntity;
+import com.booking.entity.dto.HallEntityRequestDTO;
 import com.booking.exception.HallException;
 import com.booking.repository.HallRepository;
 
@@ -34,6 +35,17 @@ public class HallService {
         return hallRepository.findAll();
     }
 
+    public HallEntity transformToHallEntity(HallEntityRequestDTO hall) {
+        HallEntity hallEntity = new HallEntity();
+        hallEntity.setId(0);
+        hallEntity.setName(hall.getName());
+        hallEntity.setCapacity(hall.getCapacity());
+        hallEntity.setLocation(hall.getLocation());
+        hallEntity.setStatus(hall.getStatus());
+        hallEntity.setDescription(hall.getDescription());
+        return hallEntity;
+    }
+
     /**
      * Saves a new hall entity to the repository.
      * 
@@ -45,13 +57,10 @@ public class HallService {
      * @return the saved {@link HallEntity} object
      * @throws HallException.HallExceptionNotFound if a hall with the same ID already exists
      */
-    public HallEntity saveHall(HallEntity hall) {
-        HallEntity existingHall = getHallById(hall.getId());
-        if (existingHall != null) {
-            throw new HallException.HallExceptionNotFound("El salon con id " + hall.getId() + " ya existe");
-        }
-        validateSaveHall(hall);
-        return hallRepository.save(hall);
+    public HallEntity saveHall(HallEntityRequestDTO hall) {
+        HallEntity hallEntity = transformToHallEntity(hall);
+        validateSaveHall(hallEntity);
+        return hallRepository.save(hallEntity);
     }
 
     /**

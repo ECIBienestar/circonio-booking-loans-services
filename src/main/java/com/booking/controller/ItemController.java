@@ -1,6 +1,7 @@
 package com.booking.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +18,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.booking.entity.ItemEntity;
+import com.booking.entity.dto.ItemEntityRequest;
+import com.booking.exception.ItemException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -48,9 +52,19 @@ public class ItemController {
 
     @PostMapping
     @Operation(summary = "Add new item", description = "Add a new item to the system", tags = { "Item Management" })
-    public ResponseEntity<?> addItem(@RequestBody ItemEntity item) {
-        ItemEntity savedItem = itemService.saveItem(item);
-        return ResponseEntity.ok(savedItem);
+    public ResponseEntity<?> addItem(@RequestBody ItemEntityRequest item) {
+        try {
+            ItemEntity savedItem = itemService.saveItem(item);
+            return ResponseEntity.status(201).body(
+                    Map.of("message", "Item creado correctamente", "item", savedItem)
+            );
+            
+        } catch (ItemException e) {
+            return ResponseEntity.status(400).body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("message", "Error: " + e.getMessage()));
+        }
+
     }
 
     @DeleteMapping("/{id}")
@@ -90,5 +104,15 @@ public class ItemController {
     public ResponseEntity<?> updateItem(@PathVariable int id, @RequestBody ItemEntity updatedItem) {
         ItemEntity item = itemService.updateItem(id, updatedItem);
         return item != null ? ResponseEntity.ok(item) : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/category/{name}")
+    @Operation(summary = "Get items by category ID", description = "Retrieve all items associated with a specific category ID", tags = { "Item Management" })
+    public ResponseEntity<?> searchItemsByCategory(@PathVariable String name) {
+        List<ItemEntity> items = itemService.searchItemsByCategory(name);
+        if (items.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(items);
     }
 }
