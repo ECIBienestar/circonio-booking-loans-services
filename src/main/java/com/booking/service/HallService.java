@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.booking.entity.HallEntity;
+import com.booking.exception.HallException;
 import com.booking.repository.HallRepository;
 
 @Service
@@ -30,18 +31,91 @@ public class HallService {
      * @return a list of {@link HallEntity} objects representing all halls.
      */
     public List<HallEntity> getAllHalls() {
-        List<HallEntity> list = hallRepository.findAll();
-        return list;
+        return hallRepository.findAll();
     }
 
+    /**
+     * Saves a new hall entity to the repository.
+     * 
+     * This method first checks if a hall with the same ID already exists. If it does,
+     * a {@link HallException.HallExceptionNotFound} is thrown. Otherwise, it validates
+     * the hall entity and saves it to the repository.
+     * 
+     * @param hall the {@link HallEntity} object to be saved
+     * @return the saved {@link HallEntity} object
+     * @throws HallException.HallExceptionNotFound if a hall with the same ID already exists
+     */
     public HallEntity saveHall(HallEntity hall) {
-        hall.toString();
+        HallEntity existingHall = getHallById(hall.getId());
+        if (existingHall != null) {
+            throw new HallException.HallExceptionNotFound("El salon con id " + hall.getId() + " ya existe");
+        }
+        validateSaveHall(hall);
         return hallRepository.save(hall);
     }
 
-    public void deleteHall(int id) {
-        hallRepository.deleteById(id);
+    /**
+     * Validates the provided HallEntity object before saving it.
+     * 
+     * <p>This method performs the following validations:
+     * <ul>
+     *   <li>Checks if the hall name is null or empty. If so, throws a 
+     *       {@link HallException.HallExceptionNotFound} with an appropriate message.</li>
+     *   <li>Checks if the hall name already exists using the {@code validateNameHall} method. 
+     *       If the name exists, throws a {@link HallException.HallExceptionNotFound} with an appropriate message.</li>
+     *   <li>Checks if the hall capacity is less than or equal to zero. If so, throws a 
+     *       {@link HallException.HallExceptionNotFound} with an appropriate message.</li>
+     * </ul>
+     * 
+     * @param hall the {@link HallEntity} object to validate
+     * @throws HallException.HallExceptionNotFound if any validation fails
+     */
+    private void validateSaveHall(HallEntity hall) {
+        if (hall.getName() == null || hall.getName().isEmpty()) {
+            throw new HallException.HallExceptionNotFound("El nombre del salon no puede estar vacio");
+        }
+
+        if (!validateNameHall(hall.getName())) {
+            throw new HallException.HallExceptionNotFound("El nombre del salon ya existe");
+        }
+
+        if (hall.getCapacity() <= 0) {
+            throw new HallException.HallExceptionNotFound("La capacidad del salon no puede ser menor o igual a 0");
+        }
     }
 
+    /**
+     * Validates the uniqueness of a hall name by checking if the given name
+     * already exists in the list of all halls.
+     *
+     * @param name the name of the hall to validate
+     * @return {@code true} if the name is unique and does not exist in the list of halls,
+     *         {@code false} otherwise
+     */
+    private boolean validateNameHall(String name) {
+        List<HallEntity> halls = hallRepository.findAll();
+        for (HallEntity hall : halls) {
+            if (hall.getName().equalsIgnoreCase(name)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
+    /**
+     * Deletes a hall with the specified ID.
+     *
+     * @param id the ID of the hall to be deleted
+     * @return a confirmation message indicating the hall has been deleted
+     * @throws HallException.HallExceptionNotFound if no hall with the specified ID exists
+     */
+    public String deleteHall(int id) {
+        HallEntity hall = getHallById(id);
+        if (hall == null) {
+            throw new HallException.HallExceptionNotFound("El salon con id " + id + " no existe");
+        }
+        hallRepository.deleteById(id);
+        return "El salon con el id " + id + " ha sido eliminado";
+    }
+    
 }
