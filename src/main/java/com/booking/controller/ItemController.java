@@ -1,12 +1,15 @@
 package com.booking.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import com.booking.service.ItemService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.Parameter;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +20,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.booking.entity.ItemEntity;
+import com.booking.entity.dto.ItemEntityRequest;
+import com.booking.exception.ItemException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -48,9 +54,19 @@ public class ItemController {
 
     @PostMapping
     @Operation(summary = "Add new item", description = "Add a new item to the system", tags = { "Item Management" })
-    public ResponseEntity<?> addItem(@RequestBody ItemEntity item) {
-        ItemEntity savedItem = itemService.saveItem(item);
-        return ResponseEntity.ok(savedItem);
+    public ResponseEntity<?> addItem(@RequestBody ItemEntityRequest item) {
+        try {
+            ItemEntity savedItem = itemService.saveItem(item);
+            return ResponseEntity.status(201).body(
+                    Map.of("message", "Item creado correctamente", "item", savedItem)
+            );
+            
+        } catch (ItemException e) {
+            return ResponseEntity.status(400).body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("message", "Error: " + e.getMessage()));
+        }
+
     }
 
     @DeleteMapping("/{id}")
@@ -90,5 +106,16 @@ public class ItemController {
     public ResponseEntity<?> updateItem(@PathVariable int id, @RequestBody ItemEntity updatedItem) {
         ItemEntity item = itemService.updateItem(id, updatedItem);
         return item != null ? ResponseEntity.ok(item) : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/category/{name}")
+    @Operation(summary = "Search items by category", description = "Search for items by their category name", tags = { "Item Management" },
+            parameters = {
+                    @Parameter(name = "available", description = "Filter by availability", required = false, in = ParameterIn.QUERY)
+            })
+    public ResponseEntity<?> searchItemsByCategory(@PathVariable String name,
+                                                   @RequestParam(value = "available", required = false) Boolean available) {
+        List<ItemEntity> items = itemService.searchItemsByCategory(name, available);
+        return ResponseEntity.ok(items);
     }
 }
