@@ -10,6 +10,5 @@ import com.booking.entity.BookingEntity;
 @Repository
 public interface BookingRepository extends JpaRepository<BookingEntity, Integer> {
     List<BookingEntity> findByIdUser(int id);
-
-    List<BookingEntity> findByHallId(int id);
+    //List<BookingEntity> findByHallId(int id);
 }

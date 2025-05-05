@@ -13,11 +13,12 @@ import com.booking.entity.LoanEntity;
 import com.booking.entity.dto.BookingRequestDTO;
 import com.booking.entity.dto.LoanRequestDTO;
 import com.booking.exception.BookingException;
+import com.booking.exception.ItemException;
 import com.booking.repository.BookingRepository;
 
 @Service
 public class BookingService {
-    
+
     @Autowired
     private BookingRepository bookingRepository;
 
@@ -30,51 +31,83 @@ public class BookingService {
     @Autowired
     private HallService hallService;
 
+    /**
+     * Retrieves a list of all booking entities from the repository.
+     *
+     * @return a list of {@link BookingEntity} objects representing all bookings.
+     */
     public List<BookingEntity> getAllBookings() {
         return bookingRepository.findAll();
     }
 
+    /**
+     * Checks if a booking is available based on the provided booking request details.
+     *
+     * @param bookingRequest the booking request containing details such as hall ID, date, 
+     *                       start time, and end time.
+     * @return {@code true} if the booking is available; {@code false} otherwise.
+     *
+     * The method performs the following checks:
+     * - Iterates through all existing bookings retrieved from the repository.
+     * - Compares the hall ID of the existing booking with the requested hall ID.
+     * - Ensures the booking status is not "Cancelada" (Cancelled).
+     * - Checks if the date of the existing booking matches the requested date.
+     * - Verifies that the requested time range does not overlap with the existing booking's time range.
+     */
     private boolean isBookingAvailable(BookingRequestDTO bookingRequest) {
         List<BookingEntity> bookings = bookingRepository.findAll();
         for (BookingEntity booking : bookings) {
             if (booking.getHallId().getId() == bookingRequest.getHallId()) {
-                if (booking.getDate().equals(bookingRequest.getDate())) {
-                    if ((booking.getTimeStartBooking().isBefore(bookingRequest.getEndTime())
-                            && booking.getTimeEndBooking().isAfter(bookingRequest.getStartTime()))) {
-                        return false;
+                if(booking.getStatus() != "Cancelada") {
+                    if (booking.getDate().equals(bookingRequest.getDate())) {
+                        if ((booking.getTimeStartBooking().isBefore(bookingRequest.getEndTime())
+                                && booking.getTimeEndBooking().isAfter(bookingRequest.getStartTime()))) {
+                            return false;
+                        }
                     }
                 }
             }
         }
         return true;
     }
-    
-    
-    public BookingEntity save(BookingRequestDTO bookingRequest){
-        BookingEntity booking = new BookingEntity();
+
+    /**
+     * Saves a booking request and creates associated loans for the requested items.
+     *
+     * @param bookingRequest the booking request containing details such as hall ID, user information,
+     *                       booking date, time, and items to be loaned.
+     * @return the saved BookingEntity object representing the booking.
+     * @throws BookingException if the hall is not found, the booking is not available for the requested time,
+     *                          or there is insufficient quantity for any requested item.
+     * @throws ItemException if an item in the booking request is not found.
+     */
+    public BookingEntity save(BookingRequestDTO bookingRequest) {
         HallEntity hall = hallService.getHallById(bookingRequest.getHallId());
         if (hall == null) {
-            throw new BookingException("No se encontro la sala");
+            throw new BookingException("No se encontró la sala");
         }
+
         if (!isBookingAvailable(bookingRequest)) {
-            throw new BookingException("La reserva no esta disponible para ese horario");
+            throw new BookingException("La reserva no está disponible para ese horario");
         }
 
-        List<ItemEntity> loansPre = new ArrayList<>();
-
-        for (LoanRequestDTO item : bookingRequest.getItemsLoan()) {
+        List<ItemEntity> validatedItems = bookingRequest.getItemsLoans().stream().map(item -> {
             ItemEntity itemEntity = itemService.getItemById(item.getIdItem());
             if (itemEntity == null) {
-                throw new BookingException("No se encontro el item");
+                throw new ItemException("No se encontró el item con ID: " + item.getIdItem());
             }
-            if (itemEntity.getQuantity() < item.getQuantity()) {
-                throw new BookingException("No hay suficiente cantidad de items");
+            if (itemEntity.getQuantityAvailable() < item.getQuantity()) {
+                throw new BookingException("Cantidad insuficiente para el item: " + itemEntity.getName());
             }
-            itemEntity.setQuantity(itemEntity.getQuantity() - item.getQuantity());
-            itemService.saveItem(itemEntity);
-            loansPre.add(itemEntity);
-        }
 
+            // Update stock
+            itemEntity.setQuantityAvailable(itemEntity.getQuantity() - item.getQuantity());
+            itemService.saveItem(itemEntity);
+            return itemEntity;
+        }).toList();
+
+        // Crear la reserva
+        BookingEntity booking = new BookingEntity();
         booking.setHallId(hall);
         booking.setIdUser(bookingRequest.getIdUser());
         booking.setNameUser(bookingRequest.getNameUser());
@@ -82,22 +115,22 @@ public class BookingService {
         booking.setDate(bookingRequest.getDate());
         booking.setTimeStartBooking(bookingRequest.getStartTime());
         booking.setTimeEndBooking(bookingRequest.getEndTime());
-        booking.setStatus("Reservado");
+        booking.setStatus("Confirmada");
 
-        BookingEntity bookingSave = bookingRepository.save(booking);
+        BookingEntity savedBooking = bookingRepository.save(booking);
 
-        for (ItemEntity item : loansPre) {
+        // Crear los préstamos
+        for (ItemEntity item : validatedItems) {
             LoanEntity loan = new LoanEntity();
             loan.setItemId(item);
-            loan.setBookingId(bookingSave);
+            loan.setBookingId(savedBooking);
             loan.setLoanDate(bookingRequest.getDate());
-            loan.setQuantity(0);
             loan.setReturnDate(bookingRequest.getDate());
-            loan.setReturnStatus("Prestado");
+            loan.setReturnStatus("Activo");
             loanService.save(loan);
         }
 
-        return bookingSave;
+        return savedBooking;
     }
 
     /**
@@ -139,18 +172,60 @@ public class BookingService {
     }
 
     /**
-     * Retrieves a list of bookings associated with a specific hall ID.
+     * Cancels a booking by its ID. This method updates the booking status to "Cancelada",
+     * updates the return status of associated loans to "Cancelado", and adjusts the 
+     * quantity available for the items associated with the loans.
      *
-     * @param id the unique identifier of the hall
-     * @return a list of {@link BookingEntity} objects associated with the specified hall ID
-     * @throws BookingException if no bookings are found for the given hall ID
+     * @param idBooking the ID of the booking to be canceled
+     * @return a confirmation message indicating the booking has been canceled
+     * @throws BookingException if the booking with the given ID is not found
      */
-    public List<BookingEntity> getBookingsByHallId(int id) {
-        List<BookingEntity> bookings = bookingRepository.findByHallId(id);
-        if (bookings.isEmpty()) {
-            throw new BookingException("No se encontraron reservas para la sala");
+    public String cancelBooking(int idBooking) {
+        BookingEntity booking = getBookingById(idBooking);
+        if (booking == null) {
+            throw new BookingException("No se encontró la reserva");
         }
-        return bookings;
+        booking.setStatus("Cancelada");
+        bookingRepository.save(booking);
+        List<LoanEntity> loans = booking.getItemsLoans();
+        for (LoanEntity loan : loans) {
+            loan.setReturnStatus("Cancelado");
+            loanService.save(loan);
+        }
+        List<ItemEntity> items = new ArrayList<>();
+        for (LoanEntity loan : loans) {
+            ItemEntity item = loan.getItemId();
+            item.setQuantityAvailable(item.getQuantityAvailable() + loan.getQuantity());
+            items.add(item);
+        }
+        for (ItemEntity item : items) {
+            itemService.saveItem(item);
+        }
+        return "Reserva cancelada";
     }
 
+    /**
+     * Terminates a booking by its ID. This method updates the booking status to "Finalizada",
+     * updates the return status of associated loans to "Finalizado", and adjusts the 
+     * quantity available for the items associated with the loans.
+     *
+     * @param idBooking the ID of the booking to be terminated
+     * @return a confirmation message indicating the booking has been terminated
+     * @throws BookingException if the booking with the given ID is not found
+     */
+    public String terminateBooking(int idBooking) {
+        BookingEntity booking = getBookingById(idBooking);
+        if (booking == null) {
+            throw new BookingException("No se encontró la reserva");
+        }
+        booking.setStatus("Finalizada");
+        bookingRepository.save(booking);
+        List<LoanEntity> loans = booking.getItemsLoans();
+        for (LoanEntity loan : loans) {
+            loan.setReturnStatus("Finalizado");
+            loanService.save(loan);
+        }
+        return "Reserva finalizada";
+    }
+    
 }

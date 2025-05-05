@@ -15,5 +15,5 @@ public class BookingRequestDTO {
     private LocalTime startTime;
     private LocalTime endTime;
     private int hallId;
-    private List<LoanRequestDTO> itemsLoan;
+    private List<LoanRequestDTO> itemsLoans;
 }
