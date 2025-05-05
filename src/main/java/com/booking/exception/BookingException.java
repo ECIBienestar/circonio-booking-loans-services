@@ -1,5 +1,13 @@
 package com.booking.exception;
 
-public class BookingException {
-    
+public class BookingException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+
+    public BookingException(String message) {
+        super(message);
+    }
+
+    public BookingException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
