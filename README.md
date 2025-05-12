@@ -169,6 +169,8 @@ The project uses **Azure Pipelines** and **GitHub Actions** for continuous integ
   mvn test
   ```
 - View coverage report: `target/site/jacoco/index.html`.
+![image](https://github.com/user-attachments/assets/0aea5486-a352-44b6-80b6-80f22072efab)
+
 
 [SonarCloud Dashboard](https://sonarcloud.io/dashboard?id=ECIBienestar_circonio-booking-loans-services)
 
