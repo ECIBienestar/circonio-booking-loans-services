@@ -41,5 +41,21 @@ public class HallEntityTest {
         
         assertEquals("Available", hall.getStatus());
     }
+
+    @Test
+    public void testHallCapacity() {
+        HallEntity hall = new HallEntity();
+        hall.setCapacity(100);
+
+        assertEquals(100, hall.getCapacity());
+    }
+
+    @Test
+    public void testHallDescription() {
+        HallEntity hall = new HallEntity();
+        hall.setDescription("A spacious hall for events.");
+
+        assertEquals("A spacious hall for events.", hall.getDescription());
+    }
     
 }

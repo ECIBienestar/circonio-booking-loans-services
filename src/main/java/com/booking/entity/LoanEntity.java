@@ -5,17 +5,14 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
 @Table(name = "items_loans")
 @Entity
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class LoanEntity {
     @Id
     @Column(name = "id", nullable = false, unique = true)
