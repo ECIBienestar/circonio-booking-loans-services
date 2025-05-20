@@ -1,4 +1,4 @@
-# ECI-Bienestar Booking Loan Services
+# ECI-Bienestar Module Booking Loan Services
 
 [![GitHub Actions](https://github.com/ECIBienestar/circonio-booking-loans-services/actions/workflows/main_ecibienestar-booking.yml/badge.svg)](https://github.com/ECIBienestar/circonio-booking-loans-services/actions)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -23,7 +23,6 @@ Key features:
 
 - [Nicole Dayan Calderon Arevalo](https://github.com/nicolecalderon)
 - [Alison Geraldine Valderrama Munar](https://github.com/alisongvalderrama)
-- [Sebastián Julián Villarraga Guerrero](https://github.com/sebastianvillarraga)
 - [Jeimy Alejandra Yaya Martinez](https://github.com/jeimyyaya)
 
 ## Technologies Used
@@ -39,6 +38,10 @@ Key features:
 | Azure           | -             | Deployment and CI/CD        |
 | PostgreSQL      | Latest        | Database (via Supabase)     |
 | Swagger         | -             | API documentation           |
+
+## Microservices Diagram
+
+![](image/microservicios.png)
 
 ## Project Structure
 
@@ -66,42 +69,55 @@ ECI-Bienestar/
 ## Diagrams
 
 - **Data Model**: Represents the database schema for bookings, loans, and items.
-  ![Data Model](image/booking.png)
 
-  Este modelo relacional gestiona reservas de espacios (halls) y préstamos de ítems (items) en un sistema.
+  ![Data Model](image/datos.png)
 
-   - Un hall puede tener muchas reservas (booking) y muchos ítems (items).
+  The diagram shows the following relationships between these tables:
 
-   - Una reserva puede estar asociada a varios préstamos de ítems mediante la tabla items_loans.
+  - Items_Loan connects to Items, linking which items are included in each loan.
+  - Items_Loan connects to Booking, showing which bookings include which items.
+  - Booking connects to Hall, indicating the hall being booked.
 
-   - Cada ítem prestado se registra en items_loans, vinculado a su reserva y al ítem correspondiente.
+This database design follows a suitable structure for PostgreSQL:
+
+  1. Separation of Responsibilities: Each table has a specific purpose, fulfilling its specific need, following good design principles.
+
+  2. Relationship Management: The join table Items_Loan follows a many-to-many relationship pattern, allowing multiple items to be associated with multiple bookings.
+
+  3. Data Integrity: Foreign key relationships ensure that data remains consistent across all tables.
 
 - **Diagrama de modulos que se utilizan**:
    ![Model](image/modulos.jpg)
-   En este diagrama los Módulos que usan este microservicio son:
+  In this diagram, the Modules that use this microservice are:
 
-   - Módulo 2(**Gestión de Salas y Préstamo de Elementos Recreativos** ): Lo llama directamente para las reservas de salas.
+  - Module 2 (Hall Management and Recreational Item Loans): Calls it directly for hall bookings.
 
-   - Módulo 6 (**Gestión de Usuarios**): Autentica y valida usuarios.
+  - Module 6 (User Management): Authenticates and validates users.
 
-   - Módulo 7(**Estadísticas**): Consulta estadísticas de las reservas y los elementos prestados
+  - Module 7 (Statistics): Queries statistics on bookings and loaned items.
 
 - **Class Diagram**: 
   ![Class Diagram](image/src.png)
 
 - **Component Diagram**:
+
+
   ![Component Diagram](image/componentes.png)
+
+## HAPPY PATH
+
 
 ## API Endpoints
 
 ### 1. Gestión de Salas (Hall Management)
 
-| Método | Endpoint | Descripción | Parámetros | Cuerpo (Body) | Respuestas |
-|--------|----------|-------------|------------|---------------|------------|
-| POST | /api/halls | Registrar una nueva sala | - | Objeto HallEntity | 201: Sala creada exitosamente<br>400: Datos inválidos<br>500: Error interno |
-| GET | /api/halls/{id} | Obtener sala por ID | id: ID de la sala | - | 200: Detalles de la sala<br>404: Sala no encontrada |
-| DELETE | /api/halls/{id} | Eliminar sala por ID | id: ID de la sala | - | 200: Sala eliminada<br>404: Sala no existe |
-| GET | /api/halls/all | Obtener todas las salas | - | - | 200: Lista de salas<br>404: No se encontraron salas |
+| Method | Endpoint | Description | Parameters | Body | Responses |
+|--------|----------|-------------|------------|------|-----------|
+| POST | /api/halls | Register a new hall | - | HallEntity object | 201: Hall successfully created<br>400: Invalid data<br>500: Internal error |
+| GET | /api/halls/{id} | Get hall by ID | id: Hall ID | - | 200: Hall details<br>404: Hall not found |
+| DELETE | /api/halls/{id} | Delete hall by ID | id: Hall ID | - | 200: Hall deleted<br>404: Hall does not exist |
+| GET | /api/halls/all | Get all halls | - | - | 200: List of halls<br>404: No halls found |
+
 
 
 Full API documentation is available via [Swagger UI](https://ecibienestar-booking-hnbeerf3caafcacs.canadacentral-01.azurewebsites.net/swagger-ui/index.html).
@@ -141,6 +157,7 @@ Full API documentation is available via [Swagger UI](https://ecibienestar-bookin
 4. **Access the application**:
    - API: `http://localhost:8080`
    - Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+   [![Swagger UI](https://img.shields.io/badge/Swagger_UI-Live-85EA2D?style=for-the-badge&logo=swagger)](https://ecibienestar-booking-hnbeerf3caafcacs.canadacentral-01.azurewebsites.net/swagger-ui/index.html)
 
 ### Troubleshooting
 - **Database connection issues**: Verify Supabase credentials and network access.
