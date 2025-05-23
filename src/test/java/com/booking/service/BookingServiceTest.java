@@ -315,31 +315,28 @@ class BookingServiceTest {
     }
 
 // Removed redundant test method `testGetLoansByBookingId_ReturnsLoansList`.
-    @Test
-    void testGetBookingsByUserId_ReturnsFirstBooking() {
-        int userId = 1;
+    @ParameterizedTest
+    @MethodSource("provideBookingsByUserIdTestCases")
+    void testGetBookingsByUserId(int userId, List<BookingEntity> bookings, Class<? extends Exception> expectedException, BookingEntity expectedResult) {
+        when(bookingRepository.findByIdUser(userId)).thenReturn(bookings);
+
+        if (expectedException != null) {
+            assertThrows(expectedException, () -> bookingService.getBookingsByUserId(userId));
+        } else {
+            BookingEntity result = bookingService.getBookingsByUserId(userId);
+            assertEquals(expectedResult, result);
+        }
+    }
+
+    private static Stream<Arguments> provideBookingsByUserIdTestCases() {
         BookingEntity booking1 = new BookingEntity();
         booking1.setId(10);
         BookingEntity booking2 = new BookingEntity();
         List<BookingEntity> bookings = List.of(booking1, booking2);
 
-        when(bookingRepository.findByIdUser(userId)).thenReturn(bookings);
-
-        BookingEntity result = bookingService.getBookingsByUserId(userId);
-
-        assertEquals(booking1, result);
+        return Stream.of(
+            Arguments.of(1, bookings, null, booking1), // Valid bookings, expect first booking
+            Arguments.of(1, Collections.emptyList(), BookingException.class, null) // No bookings, expect exception
+        );
     }
-
-    @Test
-    void testGetBookingsByUserId_ThrowsException_WhenNoBookingsFound() {
-        int userId = 1;
-
-        when(bookingRepository.findByIdUser(userId)).thenReturn(Collections.emptyList());
-
-        assertThrows(BookingException.class, () -> {
-            bookingService.getBookingsByUserId(userId);
-        });
-    }
-
-
 }
