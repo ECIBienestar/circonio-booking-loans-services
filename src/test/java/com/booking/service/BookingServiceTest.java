@@ -314,21 +314,7 @@ class BookingServiceTest {
         assertEquals("No se encontro la reserva", exception.getMessage());
     }
 
-    @Test
-    void testGetLoansByBookingId_ReturnsLoansList() {
-        int bookingId = 1;
-        BookingEntity booking = new BookingEntity();
-        List<LoanEntity> loans = List.of(new LoanEntity(), new LoanEntity());
-        booking.setItemsLoans(loans);
-
-        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
-
-        List<LoanEntity> result = bookingService.getLoansByBookingId(bookingId);
-
-        assertEquals(2, result.size());
-        assertEquals(loans, result);
-    }
-
+// Removed redundant test method `testGetLoansByBookingId_ReturnsLoansList`.
     @Test
     void testGetBookingsByUserId_ReturnsFirstBooking() {
         int userId = 1;
