@@ -34,10 +34,7 @@ public class BookingEntity {
     private String nameUser;
 
     @Column(name = "id_user", nullable = false)
-    private int idUser;
-
-    @Column(name = "rol_user", nullable = false)
-    private String rolUser;
+    private String idUser;
 
     @Column(name = "date", nullable = false)
     private LocalDate date;

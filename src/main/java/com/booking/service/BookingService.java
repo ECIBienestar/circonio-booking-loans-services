@@ -81,7 +81,7 @@ public class BookingService {
      *                          or there is insufficient quantity for any requested item.
      * @throws ItemException if an item in the booking request is not found.
      */
-    public BookingEntity save(BookingRequestDTO bookingRequest) {
+    public BookingEntity save(BookingRequestDTO bookingRequest, String userId, String userRole, String nameUser) {
         HallEntity hall = hallService.getHallById(bookingRequest.getHallId());
         if (hall == null) {
             throw new BookingException("No se encontró la sala");
@@ -109,9 +109,8 @@ public class BookingService {
         // Crear la reserva
         BookingEntity booking = new BookingEntity();
         booking.setHallId(hall);
-        booking.setIdUser(bookingRequest.getIdUser());
-        booking.setNameUser(bookingRequest.getNameUser());
-        booking.setRolUser(bookingRequest.getRolUser());
+        booking.setIdUser(userId);
+        booking.setNameUser(nameUser);
         booking.setDate(bookingRequest.getDate());
         booking.setTimeStartBooking(bookingRequest.getStartTime());
         booking.setTimeEndBooking(bookingRequest.getEndTime());
