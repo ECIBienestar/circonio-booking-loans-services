@@ -23,19 +23,8 @@ public class BookingEntityTest {
         assertEquals("John Doe", bookingEntity.getNameUser());
     }
 
-    @Test
-    public void shouldSetAndGetIdUser() {
-        BookingEntity bookingEntity = new BookingEntity();
-        bookingEntity.setIdUser(123);
-        assertEquals(123, bookingEntity.getIdUser());
-    }
 
-    @Test
-    public void shouldSetAndGetRolUser() {
-        BookingEntity bookingEntity = new BookingEntity();
-        bookingEntity.setRolUser("Admin");
-        assertEquals("Admin", bookingEntity.getRolUser());
-    }
+
 
     @Test
     public void shouldSetAndGetDate() {
@@ -87,11 +76,10 @@ public class BookingEntityTest {
     }
     @Test
     public void shouldAllArgumentsConstructor() {
-        BookingEntity bookingEntity = new BookingEntity(1, "John Doe", 123, "Admin", LocalDate.of(2023, 10, 1), LocalTime.of(9, 0), LocalTime.of(10, 0), new HallEntity(), "Confirmed", new ArrayList<>());
+        BookingEntity bookingEntity = new BookingEntity(1, "John Doe", "123", LocalDate.of(2023, 10, 1), LocalTime.of(9, 0), LocalTime.of(10, 0), new HallEntity(), "Confirmed", new ArrayList<>());
         assertEquals(1, bookingEntity.getId());
         assertEquals("John Doe", bookingEntity.getNameUser());
-        assertEquals(123, bookingEntity.getIdUser());
-        assertEquals("Admin", bookingEntity.getRolUser());
+        assertEquals("123", bookingEntity.getIdUser());
         assertEquals(LocalDate.of(2023, 10, 1), bookingEntity.getDate());
         assertEquals(LocalTime.of(9, 0), bookingEntity.getTimeStartBooking());
         assertEquals(LocalTime.of(10, 0), bookingEntity.getTimeEndBooking());

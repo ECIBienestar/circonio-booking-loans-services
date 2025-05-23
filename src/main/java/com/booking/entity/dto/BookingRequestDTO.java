@@ -8,9 +8,6 @@ import lombok.Data;
 
 @Data
 public class BookingRequestDTO {
-    private String nameUser;
-    private int idUser;
-    private String rolUser;
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
