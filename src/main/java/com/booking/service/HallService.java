@@ -74,6 +74,9 @@ public class HallService {
      * @throws HallException.HallExceptionNotFound if a hall with the same ID does not exist
      */
     public HallEntity saveHall(HallEntity hall) {
+        if (!hallRepository.findById(hall.getId()).isPresent()) {
+            throw new HallException.HallExceptionNotFound("Hall with ID " + hall.getId() + " does not exist.");
+        }
         return hallRepository.save(hall);
     }
 
