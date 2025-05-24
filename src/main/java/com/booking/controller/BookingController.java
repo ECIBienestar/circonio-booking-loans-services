@@ -16,13 +16,13 @@ import com.booking.entity.dto.BookingRequestDTO;
 import com.booking.exception.BookingException;
 import com.booking.exception.ItemException;
 import com.booking.service.BookingService;
-
+/* 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.booking.security.UserDetailsImpl;
-
+*/
 
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,14 +34,14 @@ public class BookingController {
     @Autowired
     private BookingService bookingService;
 
-    @PreAuthorize("hasRole('ADMINISTRATOR')")
+    //@PreAuthorize("hasRole('ADMINISTRATOR')")
     @GetMapping
     @Operation(summary = "Get all bookings", description = "Retrieve all bookings", tags = { "Booking Management" })
     public ResponseEntity<?> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
 
-    @PreAuthorize("hasRole('ADMINISTRATOR')")
+    //@PreAuthorize("hasRole('ADMINISTRATOR')")
     @GetMapping("/{id}")
     @Operation(summary = "Get booking by ID", description = "Retrieve a booking by its ID", tags = {
             "Booking Management" })
@@ -67,7 +67,7 @@ public class BookingController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMINISTRATOR')")
+    //@PreAuthorize("hasRole('ADMINISTRATOR')")
     @GetMapping("/user/{id}")
     @Operation(summary = "Get bookings by user ID", description = "Retrieve all bookings associated with a specific user ID", tags = {
             "Booking Management" })
@@ -113,16 +113,15 @@ public class BookingController {
                             Map.of("status", "error", "message", e.getMessage()));
         }
     }
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'TEACHER', 'STUDENT')")
+    //@PreAuthorize("hasAnyRole('ADMINISTRATOR', 'TEACHER', 'STUDENT')")
     @PostMapping
     @Operation(summary = "Create a new booking", description = "Creates a new booking with associated items", tags = {
             "Booking Management" })
-    public ResponseEntity<?> save(@RequestBody BookingRequestDTO bookingRequest, 
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<?> save(@RequestBody BookingRequestDTO bookingRequest) {
         try {
-            String userId = userDetails.getId();
-            String userRole = userDetails.getRole();
-            String nameUser = userDetails.getFullName();
+            String userId = "";
+            String userRole = "";
+            String nameUser = "";
             BookingEntity savedBooking = bookingService.save(bookingRequest, userId, userRole, nameUser);
             return ResponseEntity.status(201).body(Map.of("status", "success", "data", savedBooking));
         } catch (BookingException | ItemException e) {
@@ -148,7 +147,7 @@ public class BookingController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'TEACHER', 'STUDENT')")
+    //@PreAuthorize("hasAnyRole('ADMINISTRATOR', 'TEACHER', 'STUDENT')")
     @PostMapping("/{id}/return")
     @Operation(summary = "Return a booking", description = "Returns a booking and its associated loans", tags = {
             "Booking Management" })

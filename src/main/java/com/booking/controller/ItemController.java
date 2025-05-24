@@ -24,7 +24,7 @@ import com.booking.entity.dto.ItemEntityRequest;
 import com.booking.exception.ItemException;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -36,7 +36,7 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'TEACHER', 'STUDENT')")
+    //@PreAuthorize("hasAnyRole('ADMINISTRATOR', 'TEACHER', 'STUDENT')")
     @GetMapping("/{id}")
     @Operation(summary = "Get item by ID", description = "Retrieve an item by its ID", tags = { "Item Management" })
     public ResponseEntity<ItemEntity> getItemById(@PathVariable int id) {
@@ -48,14 +48,14 @@ public class ItemController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'TEACHER', 'STUDENT')")
+    //@PreAuthorize("hasAnyRole('ADMINISTRATOR', 'TEACHER', 'STUDENT')")
     @GetMapping("/all")
     @Operation(summary = "Get all items", description = "Retrieve all items", tags = { "Item Management" })
     public ResponseEntity<?> getAllItems() {
         return ResponseEntity.ok(itemService.getAllItems());
     }
 
-    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
+    //@PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
     @PostMapping
     @Operation(summary = "Add new item", description = "Add a new item to the system", tags = { "Item Management" })
     public ResponseEntity<?> addItem(@RequestBody ItemEntityRequest item) {
@@ -73,7 +73,7 @@ public class ItemController {
 
     }
 
-    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
+    //@PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete item by ID", description = "Delete an item by its ID", tags = { "Item Management" })
     public ResponseEntity<?> deleteItem(@PathVariable int id) {
@@ -81,7 +81,7 @@ public class ItemController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'TEACHER', 'STUDENT')")
+    //@PreAuthorize("hasAnyRole('ADMINISTRATOR', 'TEACHER', 'STUDENT')")
     @GetMapping("/hall/{id}")
     @Operation(summary = "Get items by hall ID", description = "Retrieve all items associated with a specific hall ID", tags = { "Item Management" })
     public ResponseEntity<?> findByIdHall(@PathVariable int id) {
@@ -97,7 +97,7 @@ public class ItemController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'TEACHER', 'STUDENT')")
+    //@PreAuthorize("hasAnyRole('ADMINISTRATOR', 'TEACHER', 'STUDENT')")
     @GetMapping("/search")
     @Operation(summary = "Search items by name", description = "Search for items by their name", tags = { "Item Management" })
     public ResponseEntity<?> searchItemsByName(@RequestParam String name) {
@@ -108,7 +108,7 @@ public class ItemController {
         return ResponseEntity.ok(items);
     }
 
-    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
+    //@PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
     @PutMapping("/{id}")
     @Operation(summary = "Update item by ID", description = "Update an existing item by its ID", tags = { "Item Management" })
     public ResponseEntity<?> updateItem(@PathVariable int id, @RequestBody ItemEntity updatedItem) {
@@ -116,7 +116,7 @@ public class ItemController {
         return item != null ? ResponseEntity.ok(item) : ResponseEntity.notFound().build();
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'TEACHER', 'STUDENT')")
+    //@PreAuthorize("hasAnyRole('ADMINISTRATOR', 'TEACHER', 'STUDENT')")
     @GetMapping("/category/{name}")
     @Operation(summary = "Search items by category", description = "Search for items by their category name", tags = { "Item Management" },
             parameters = {
