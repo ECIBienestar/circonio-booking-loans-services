@@ -269,19 +269,19 @@ class BookingServiceTest {
     @Test
     void getBookingsByUserId_shouldReturnFirstBooking() {
         BookingEntity booking = new BookingEntity();
-        when(bookingRepository.findByIdUser(1)).thenReturn(List.of(booking));
+        when(bookingRepository.findByIdUser("1")).thenReturn(List.of(booking));
 
-        BookingEntity result = bookingService.getBookingsByUserId(1);
+        BookingEntity result = bookingService.getBookingsByUserId("1");
 
         assertNotNull(result);
-        verify(bookingRepository, times(1)).findByIdUser(1);
+        verify(bookingRepository, times(1)).findByIdUser("1");
     }
 
     @Test
     void getBookingsByUserId_shouldThrowException_whenNoBookingsFound() {
-        when(bookingRepository.findByIdUser(1)).thenReturn(List.of());
+        when(bookingRepository.findByIdUser("1")).thenReturn(List.of());
 
-        BookingException exception = assertThrows(BookingException.class, () -> bookingService.getBookingsByUserId(1));
+        BookingException exception = assertThrows(BookingException.class, () -> bookingService.getBookingsByUserId("1"));
         assertEquals("No se encontraron reservas para el usuario", exception.getMessage());
     }
 
@@ -331,7 +331,7 @@ class BookingServiceTest {
 
     @Test
     void testGetBookingsByUserId_ReturnsFirstBooking() {
-        int userId = 1;
+        String userId = "1";
         BookingEntity booking1 = new BookingEntity();
         booking1.setId(10);
         BookingEntity booking2 = new BookingEntity();
@@ -346,7 +346,7 @@ class BookingServiceTest {
 
     @Test
     void testGetBookingsByUserId_ThrowsException_WhenNoBookingsFound() {
-        int userId = 1;
+        String userId = "1";
 
         when(bookingRepository.findByIdUser(userId)).thenReturn(Collections.emptyList());
 

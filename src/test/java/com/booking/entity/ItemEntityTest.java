@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
-public class ItemEntityTest {
+class ItemEntityTest {
 
     @Test
-    public void testItemId() {
+    void testItemId() {
         ItemEntity item = new ItemEntity();
         item.setId(1);
 
@@ -16,7 +16,7 @@ public class ItemEntityTest {
     }
 
     @Test
-    public void testItemCreation() {
+    void testItemCreation() {
         ItemEntity item = new ItemEntity();
         item.setName("Projector");
         
@@ -24,7 +24,7 @@ public class ItemEntityTest {
     }
 
     @Test
-    public void testItemDescription() {
+    void testItemDescription() {
         ItemEntity item = new ItemEntity();
         item.setDescription("A high-quality projector for presentations.");
 
@@ -32,7 +32,7 @@ public class ItemEntityTest {
     }
 
     @Test
-    public void testItemStatus() {
+    void testItemStatus() {
         ItemEntity item = new ItemEntity();
         item.setStatus("Available");
 
@@ -40,7 +40,7 @@ public class ItemEntityTest {
     }
 
     @Test
-    public void testItemCategory() {
+    void testItemCategory() {
         ItemEntity item = new ItemEntity();
         item.setCategory("Electronics");
 
@@ -48,7 +48,7 @@ public class ItemEntityTest {
     }
 
     @Test
-    public void testItemQuantity() {
+    void testItemQuantity() {
         ItemEntity item = new ItemEntity();
         item.setQuantity(10);
 
@@ -56,7 +56,7 @@ public class ItemEntityTest {
     }
 
     @Test
-    public void testItemHallId() {
+    void testItemHallId() {
         ItemEntity item = new ItemEntity();
         item.setId(2);
         
@@ -64,14 +64,14 @@ public class ItemEntityTest {
     }
 
     @Test
-    public void testItemQuantityAvailable() {
+    void testItemQuantityAvailable() {
         ItemEntity item = new ItemEntity();
         item.setQuantityAvailable(5);
 
         assertEquals(5, item.getQuantityAvailable());
     }
     @Test
-    public void testItemAvailable() {
+    void testItemAvailable() {
         ItemEntity item = new ItemEntity();
         item.setAvailable(true);
 
@@ -79,7 +79,7 @@ public class ItemEntityTest {
     }
 
     @Test
-    public void testHallLocation() {
+    void testHallLocation() {
         ItemEntity item = new ItemEntity();
         HallEntity hall = new HallEntity(1, "Room 101", "Conference Hall", "Available", "Projector", 100);
         item.setHall(hall);
@@ -87,7 +87,7 @@ public class ItemEntityTest {
     }
 
     @Test
-    public void itemEntityConstructorSetsAllFieldsCorrectly() {
+    void itemEntityConstructorSetsAllFieldsCorrectly() {
         HallEntity hall = new HallEntity(1, "Room 101", "Conference Hall", "Available", "Projector", 100);
         ItemEntity item = new ItemEntity(1, "Projector", "A high-quality projector for presentations.", "Available", "Electronics", 10, 5, true, hall);
 
@@ -103,7 +103,7 @@ public class ItemEntityTest {
     }
 
     @Test
-    public void itemEntityConstructorHandlesNullHall() {
+    void itemEntityConstructorHandlesNullHall() {
         ItemEntity item = new ItemEntity(1, "Projector", "A high-quality projector for presentations.", "Available", "Electronics", 10, 5, true, null);
 
         assertEquals(1, item.getId());
@@ -118,7 +118,7 @@ public class ItemEntityTest {
     }
 
     @Test
-    public void itemEntityConstructorHandlesEmptyStrings() {
+    void itemEntityConstructorHandlesEmptyStrings() {
         HallEntity hall = new HallEntity(1, "Room 101", "Conference Hall", "Available", "Projector", 100);
         ItemEntity item = new ItemEntity(0, "", "", "", "", 0, 0, false, hall);
 

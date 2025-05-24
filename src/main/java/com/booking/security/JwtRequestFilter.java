@@ -1,13 +1,12 @@
-package com.booking.security;
+/*package com.booking.security;
 
-import io.jsonwebtoken.Claims;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
@@ -31,20 +30,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             if (jwtUtil.validateToken(token)) {
-                Claims claims = jwtUtil.extractClaims(token);
+                DecodedJWT jwt = jwtUtil.decodeToken(token);
 
-                // Extraer datos del token
-                String userId = claims.get("id", String.class);
-                String role = claims.get("role", String.class);
-                String fullName = claims.get("fullName", String.class);
-                String email = claims.get("email", String.class);
+                String userId = jwt.getClaim("id").asString();
+                String fullName = jwt.getClaim("fullName").asString();
+                String email = jwt.getClaim("email").asString();
+                String role = jwt.getClaim("role").asString();
 
-                // Crear una autenticación personalizada
                 UserDetailsImpl userDetails = new UserDetailsImpl(userId, fullName, email, role);
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-                // Guardar en el contexto de seguridad
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
@@ -52,3 +48,4 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+*/
