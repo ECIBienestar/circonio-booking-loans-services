@@ -3,7 +3,7 @@ package com.booking.controller;
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +39,7 @@ public class HallController {
      * @return the HallEntity if found, or {@code null} if no hall exists with the
      *         given id
      */
-    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
+    //@PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
     @GetMapping("/all")
     @Operation(summary = "Get all halls", description = "Retrieves a list of all halls in the system.", tags = {
             "Hall Management" }, responses = {
@@ -57,7 +57,7 @@ public class HallController {
      * @return a ResponseEntity containing the hall details if found, or an
      *         appropriate error response
      */
-    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
+    //@PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
     @GetMapping("/{id}")
     @Operation(summary = "Get hall by ID", description = "Retrieves the details of a hall by its unique identifier.", tags = {
             "Hall Management" }, parameters = {
@@ -77,7 +77,7 @@ public class HallController {
      * @return a ResponseEntity containing a success message upon successful
      *         deletion
      */
-    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
+    //@PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a hall by ID", description = "Deletes a hall with the specified ID from the system.", tags = {
             "Hall Management" }, parameters = {
@@ -109,7 +109,7 @@ public class HallController {
      *         500 (Internal Server Error)
      *         if an exception occurs.
      */
-    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
+    //@PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
     @PostMapping
     @Operation(summary = "Register a new hall", description = "Creates a new hall with the provided details. The hall must have a unique name and a valid capacity.", tags = {
             "Hall Management" }, requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "JSON object with the details of the hall to be created.", required = true, content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json", schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = HallEntity.class), examples = {
@@ -150,7 +150,7 @@ public class HallController {
          * @return a ResponseEntity containing a success message upon successful
          *         update
          */
-        @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
+        //@PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
         @PutMapping("/{id}/status")
         @Operation(summary = "Change hall availability status", description = "Enable (A) or disable (I) a specific hall. ", tags = {
                 "Hall Management" }, parameters = {

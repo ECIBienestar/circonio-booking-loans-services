@@ -1,4 +1,4 @@
-package com.booking.security;
+/*package com.booking.security;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.*;
@@ -48,3 +48,4 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+*/

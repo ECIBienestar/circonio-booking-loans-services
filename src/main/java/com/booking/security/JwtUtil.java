@@ -1,4 +1,4 @@
-package com.booking.security;
+/*package com.booking.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -41,3 +41,4 @@ public class JwtUtil {
         }
     }
 }
+*/

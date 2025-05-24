@@ -1,4 +1,4 @@
-package com.booking.security;
+/*package com.booking.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,3 +31,4 @@ public class SecurityConfig {
     }
 }
 
+*/
