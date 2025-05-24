@@ -1,34 +1,43 @@
 package com.booking.security;
 
-import io.jsonwebtoken.*;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.JWTVerifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
+@PropertySource(value = {"classpath:application.properties"})
 public class JwtUtil {
 
     @Value("${jwt.secret}")
     private String secret;
 
-    public Claims extractClaims(String token) throws ExpiredJwtException {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+    private Algorithm getAlgorithm() {
+        return Algorithm.HMAC256(secret);
+    }
+
+    public DecodedJWT decodeToken(String token) {
+        JWTVerifier verifier = JWT.require(getAlgorithm()).build();
+        return verifier.verify(token);
     }
 
     public String extractUsername(String token) {
-        return extractClaims(token).getSubject();
+        return decodeToken(token).getSubject();
     }
 
-    public String extractRole(String token) {
-        return (String) extractClaims(token).get("role");
+    public String extractClaim(String token, String claimName) {
+        return decodeToken(token).getClaim(claimName).asString();
     }
 
     public boolean validateToken(String token) {
         try {
-            extractClaims(token);
+            decodeToken(token); // Lanza excepción si es inválido
             return true;
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (Exception e) {
             return false;
         }
     }
 }
-

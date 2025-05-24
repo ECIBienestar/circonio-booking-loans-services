@@ -71,11 +71,11 @@ public class BookingController {
     @GetMapping("/user/{id}")
     @Operation(summary = "Get bookings by user ID", description = "Retrieve all bookings associated with a specific user ID", tags = {
             "Booking Management" })
-    public ResponseEntity<?> getBookingsByUserId(@PathVariable int id) {
+    public ResponseEntity<?> getBookingsByUserId(@PathVariable String idUser) {
         try {
             return ResponseEntity.status(
                     200).body(
-                            Map.of("status", "success", "data", bookingService.getBookingsByUserId(id)));
+                            Map.of("status", "success", "data", bookingService.getBookingsByUserId(idUser)));
         } catch (BookingException e) {
             return ResponseEntity.status(
                     400).body(
