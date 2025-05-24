@@ -1,9 +1,9 @@
 package com.booking.entity.dto;
 
-import java.time.LocalDate;
-
 import lombok.Data;
+import lombok.Setter;
 
+@Setter
 @Data
 public class LoanRequestDTO {
     private int idItem;

@@ -3,10 +3,12 @@ package com.booking.controller;
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,8 +22,6 @@ import com.booking.service.HallService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -39,6 +39,7 @@ public class HallController {
      * @return the HallEntity if found, or {@code null} if no hall exists with the
      *         given id
      */
+    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
     @GetMapping("/all")
     @Operation(summary = "Get all halls", description = "Retrieves a list of all halls in the system.", tags = {
             "Hall Management" }, responses = {
@@ -56,6 +57,7 @@ public class HallController {
      * @return a ResponseEntity containing the hall details if found, or an
      *         appropriate error response
      */
+    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
     @GetMapping("/{id}")
     @Operation(summary = "Get hall by ID", description = "Retrieves the details of a hall by its unique identifier.", tags = {
             "Hall Management" }, parameters = {
@@ -75,6 +77,7 @@ public class HallController {
      * @return a ResponseEntity containing a success message upon successful
      *         deletion
      */
+    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a hall by ID", description = "Deletes a hall with the specified ID from the system.", tags = {
             "Hall Management" }, parameters = {
@@ -106,6 +109,7 @@ public class HallController {
      *         500 (Internal Server Error)
      *         if an exception occurs.
      */
+    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
     @PostMapping
     @Operation(summary = "Register a new hall", description = "Creates a new hall with the provided details. The hall must have a unique name and a valid capacity.", tags = {
             "Hall Management" }, requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "JSON object with the details of the hall to be created.", required = true, content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json", schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = HallEntity.class), examples = {
@@ -137,4 +141,61 @@ public class HallController {
             return ResponseEntity.status(Response.SC_INTERNAL_SERVER_ERROR).body("Error of server: " + e.getMessage());
         }
     }
+
+        /**
+         * Updates the status of a hall with the specified ID.
+         *
+         * @param id      the ID of the hall to be updated
+         * @param request the request body containing the new status
+         * @return a ResponseEntity containing a success message upon successful
+         *         update
+         */
+        @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('TEACHER')")
+        @PutMapping("/{id}/status")
+        @Operation(summary = "Change hall availability status", description = "Enable (A) or disable (I) a specific hall. ", tags = {
+                "Hall Management" }, parameters = {
+                        @Parameter(name = "id", description = "ID of the hall to update", required = true, example = "1")
+                }, requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "JSON object with the new status of the hall.", required = true, content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json", schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = HallEntity.class), examples = {
+                        @io.swagger.v3.oas.annotations.media.ExampleObject(name = "Example Hall", summary = "Typical hall creation request", value = """
+                                {
+                                  "status": "A"
+                                }
+                                """)
+                })), responses = {
+                        @ApiResponse(responseCode = "200", description = "Estado actualizado correctamente"),
+                        @ApiResponse(responseCode = "404", description = "Sala no encontrada"),
+                        @ApiResponse(responseCode = "500", description = "Error interno del servidor"),
+                        @ApiResponse(responseCode = "400", description = "Invalid status value")
+                }
+        )
+    public ResponseEntity<?> changeHallStatus(@PathVariable int id, @RequestBody Map<String, String> request) {
+        try {
+                String newStatus = request.get("status");
+                if (newStatus == null || (!newStatus.equals("A") && !newStatus.equals("I"))) {
+                return ResponseEntity.status(Response.SC_BAD_REQUEST).body(
+                        Map.of("error", "Invalid status", "message", "Status must be 'A' (active) or 'I' (inactive)"));
+                }
+
+                HallEntity hall = hallService.getHallById(id);
+                if (hall == null) {
+                return ResponseEntity.status(Response.SC_BAD_REQUEST).body(
+                        Map.of("error", "Hall not found", "message", "No hall found with ID: " + id));
+                }
+
+                hall.setStatus(newStatus);
+                HallEntity updatedHall = hallService.saveHall(hall);
+
+                return ResponseEntity.ok(Map.of(
+                "message", "Hall status updated successfully",
+                "hall", updatedHall
+                ));
+
+                } catch (HallException e) {
+                return ResponseEntity.status(Response.SC_BAD_REQUEST).body(
+                        Map.of("error", "Error updating hall status", "message", e.getMessage()));
+                } catch (Exception e) {
+                        return ResponseEntity.status(Response.SC_INTERNAL_SERVER_ERROR).body(
+                        Map.of("error", "Server error", "message", e.getMessage()));
+                }
+        }
 }

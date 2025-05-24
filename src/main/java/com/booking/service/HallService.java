@@ -64,6 +64,20 @@ public class HallService {
     }
 
     /**
+     * Updates an existing hall entity in the repository.
+     * 
+     * This method first checks if a hall with the same ID already exists. If it does,
+     * it validates the hall entity and updates it in the repository.
+     * 
+     * @param hall the {@link HallEntity} object to be updated
+     * @return the updated {@link HallEntity} object
+     * @throws HallException.HallExceptionNotFound if a hall with the same ID does not exist
+     */
+    public HallEntity saveHall(HallEntity hall) {
+        return hallRepository.save(hall);
+    }
+
+    /**
      * Validates the provided HallEntity object before saving it.
      * 
      * <p>This method performs the following validations:

@@ -15,17 +15,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 @Entity
 @Table(name = "booking")
-@Data
-@Builder
 @AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
 public class BookingEntity {
     @Id
@@ -37,10 +34,7 @@ public class BookingEntity {
     private String nameUser;
 
     @Column(name = "id_user", nullable = false)
-    private int idUser;
-
-    @Column(name = "rol_user", nullable = false)
-    private String rolUser;
+    private String idUser;
 
     @Column(name = "date", nullable = false)
     private LocalDate date;
@@ -60,7 +54,6 @@ public class BookingEntity {
 
     @OneToMany(mappedBy = "bookingId", targetEntity = LoanEntity.class)
     @JsonManagedReference
-    @Builder.Default
     private List<LoanEntity> itemsLoans = new ArrayList<>();
 
 }
