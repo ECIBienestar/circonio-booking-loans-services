@@ -1,7 +1,13 @@
 package com.booking.config;
 
+import java.util.Arrays;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 /**
  * Configuration class for setting up Cross-Origin Resource Sharing (CORS) mappings.
@@ -23,20 +29,18 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 @Configuration
 public class CorsConfig {
 
-    /**
-     * Configures CORS (Cross-Origin Resource Sharing) mappings for the application.
-     *
-     * @param registry the {@link CorsRegistry} to configure CORS mappings
-     * 
-     * <p>This method allows all origins, HTTP methods (GET, POST, PUT, PATCH, DELETE, OPTIONS),
-     * and headers for cross-origin requests. Additionally, it enables credentials to be included
-     * in cross-origin requests.</p>
-     */
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("*")
-                .allowedMethods("GET", "POST", "PUT", "PATCH","DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true);
+    private String frontendUrl = "*";
+    
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(Arrays.asList(frontendUrl));
+        config.addAllowedHeader("*");
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"));
+        source.registerCorsConfiguration("/**", config);
+        config.setMaxAge(3600L);
+        return new CorsFilter(source);
     }
 }
