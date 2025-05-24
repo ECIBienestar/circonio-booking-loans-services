@@ -29,14 +29,17 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 public class CorsConfig {
 
-    private String frontendUrl = "*";
+    @Value("${cors.allowed-origins}")
+    private String allowedOriginsString;
     
     @Bean
     public CorsFilter corsFilter() {
+        String[] allowedOrigins = allowedOriginsString.split(",");
+        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList(frontendUrl));
+        config.setAllowedOrigins(Arrays.asList(allowedOrigins));
         config.addAllowedHeader("*");
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"));
         source.registerCorsConfiguration("/**", config);
