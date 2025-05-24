@@ -1,71 +1,80 @@
 package com.booking.security;
 
-import io.jsonwebtoken.Claims;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.IOException;
+import java.util.Map;
 
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class JwtRequestFilterTest {
 
-    @Mock
     private JwtUtil jwtUtil;
-
-    @Mock
-    private HttpServletRequest request;
-
-    @Mock
-    private HttpServletResponse response;
-
-    @Mock
-    private FilterChain filterChain;
-
-    @Mock
-    private Claims claims;
-
     private JwtRequestFilter jwtRequestFilter;
+
+    private HttpServletRequest request;
+    private HttpServletResponse response;
+    private FilterChain filterChain;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        jwtUtil = mock(JwtUtil.class);
         jwtRequestFilter = new JwtRequestFilter(jwtUtil);
+
+        request = mock(HttpServletRequest.class);
+        response = mock(HttpServletResponse.class);
+        filterChain = mock(FilterChain.class);
         SecurityContextHolder.clearContext();
     }
 
     @Test
-    void testValidTokenSetsAuthentication() throws ServletException, IOException {
+    void shouldAuthenticateWhenTokenIsValid() throws ServletException, IOException {
         String token = "valid.token.here";
         String header = "Bearer " + token;
 
         when(request.getHeader("Authorization")).thenReturn(header);
         when(jwtUtil.validateToken(token)).thenReturn(true);
-        when(jwtUtil.extractClaims(token)).thenReturn(claims);
 
-        when(claims.get("id", String.class)).thenReturn("123");
-        when(claims.get("role", String.class)).thenReturn("ROLE_USER");
-        when(claims.get("fullName", String.class)).thenReturn("Jeimy Rodríguez");
-        when(claims.get("email", String.class)).thenReturn("jeimy@email.com");
+        // Mock DecodedJWT and claims
+        DecodedJWT decodedJWT = mock(DecodedJWT.class);
+        when(jwtUtil.decodeToken(token)).thenReturn(decodedJWT);
+
+        Map<String, String> claims = Map.of(
+                "id", "123",
+                "fullName", "John Doe",
+                "email", "john@example.com",
+                "role", "USER"
+        );
+
+        claims.forEach((key, value) -> {
+            Claim claim = mock(Claim.class);
+            when(claim.asString()).thenReturn(value);
+            when(decodedJWT.getClaim(key)).thenReturn(claim);
+        });
 
         jwtRequestFilter.doFilterInternal(request, response, filterChain);
 
-        assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-        assertEquals("123", ((UserDetailsImpl) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal()).getId());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+        assertNotNull(auth);
+        assertEquals("john@example.com", ((UserDetailsImpl) auth.getPrincipal()).getEmail());
         verify(filterChain).doFilter(request, response);
     }
 
     @Test
-    void testNoTokenSkipsAuthentication() throws ServletException, IOException {
+    void shouldNotAuthenticateWhenHeaderIsMissing() throws ServletException, IOException {
         when(request.getHeader("Authorization")).thenReturn(null);
 
         jwtRequestFilter.doFilterInternal(request, response, filterChain);
@@ -75,9 +84,11 @@ class JwtRequestFilterTest {
     }
 
     @Test
-    void testInvalidTokenSkipsAuthentication() throws ServletException, IOException {
-        String token = "invalid.token";
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
+    void shouldNotAuthenticateWhenTokenIsInvalid() throws ServletException, IOException {
+        String token = "bad.token";
+        String header = "Bearer " + token;
+
+        when(request.getHeader("Authorization")).thenReturn(header);
         when(jwtUtil.validateToken(token)).thenReturn(false);
 
         jwtRequestFilter.doFilterInternal(request, response, filterChain);
@@ -86,4 +97,3 @@ class JwtRequestFilterTest {
         verify(filterChain).doFilter(request, response);
     }
 }
-

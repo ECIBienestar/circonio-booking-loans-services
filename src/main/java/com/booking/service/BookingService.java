@@ -162,8 +162,8 @@ public class BookingService {
      * @return the first {@link BookingEntity} associated with the given user ID.
      * @throws BookingException if no bookings are found for the specified user ID.
      */
-    public BookingEntity getBookingsByUserId(int id) {
-        List<BookingEntity> bookings = bookingRepository.findByIdUser(id);
+    public BookingEntity getBookingsByUserId(String idUser) {
+        List<BookingEntity> bookings = bookingRepository.findByIdUser(idUser);
         if (bookings.isEmpty()) {
             throw new BookingException("No se encontraron reservas para el usuario");
         }
